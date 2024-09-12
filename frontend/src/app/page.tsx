@@ -1,101 +1,120 @@
-import Image from "next/image";
+import { buttonVariants } from "@/components/ui/button"
+import { getProducts } from "./products/products.api"
+import Link from "next/link"
+import { ProductCard } from "@/components/product-card"
+import { Utensils, ShoppingBag, Clock, ShoppingCart, Menu } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-export default function Home() {
+async function HomePage() {
+  const products = await getProducts()
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-orange-50">
+      {/* Navbar */}
+      <nav className="bg-white shadow-md">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-4">
+            <Link href="/" className="text-2xl font-bold text-orange-500">El Olimpo</Link>
+            
+            <div className="hidden md:flex space-x-4">
+              <Link href="/" className="text-gray-700 hover:text-orange-500">Inicio</Link>
+              <Link href="/menu" className="text-gray-700 hover:text-orange-500">Menú</Link>
+              <Link href="/about" className="text-gray-700 hover:text-orange-500">Nosotros</Link>
+              <Link href="/contact" className="text-gray-700 hover:text-orange-500">Contacto</Link>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <Link href="/cart">
+                <Button variant="ghost" size="icon">
+                  <ShoppingCart className="h-6 w-6" />
+                </Button>
+              </Link>
+              <Button variant="outline" className="hidden md:inline-flex">
+                Ordenar Ahora
+              </Button>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-20">
+        <div className="container mx-auto px-4">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4">El Olimpo</h1>
+          <p className="text-xl md:text-2xl mb-8">Sabores divinos, entrega olímpica</p>
+          <Link href="/menu" className={buttonVariants({ size: "lg" })}>
+            Ver Menú
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center">
+              <Utensils className="w-12 h-12 text-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Comida Fresca</h3>
+              <p>Ingredientes de calidad para sabores increíbles</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <ShoppingBag className="w-12 h-12 text-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Entrega Rápida</h3>
+              <p>Tu comida llega caliente y en tiempo récord</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <Clock className="w-12 h-12 text-orange-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Abierto 24/7</h3>
+              <p>Satisface tus antojos a cualquier hora</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center">Productos Destacados</h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.slice(0, 8).map((product) => (
+              <ProductCard product={product} key={product.id} />
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link href="/products" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              Ver Todos los Productos
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-orange-600 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">¿Listo para ordenar?</h2>
+          <p className="text-xl mb-8">Haz tu pedido ahora y disfruta de la mejor comida rápida</p>
+          <Link href="/order" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+            Ordenar Ahora
+          </Link>
+        </div>
+      </section>
+
+      {/* Admin Section */}
+      <section className="py-8 bg-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Administración de Productos</h2>
+            <Link href="products/new" className={buttonVariants()}>
+              Crear Productos
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
 }
+
+export default HomePage
