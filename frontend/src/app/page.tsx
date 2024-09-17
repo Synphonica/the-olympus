@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { buttonVariants } from "@/components/ui/button"
 import { getProducts } from "./products/products.api"
 import Link from "next/link"
@@ -15,15 +16,26 @@ async function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <Link href="/" className="text-2xl font-bold text-orange-500">El Olimpo</Link>
-            
+
             <div className="hidden md:flex space-x-4">
               <Link href="/" className="text-gray-700 hover:text-orange-500">Inicio</Link>
               <Link href="/menu" className="text-gray-700 hover:text-orange-500">Menú</Link>
               <Link href="/about" className="text-gray-700 hover:text-orange-500">Nosotros</Link>
               <Link href="/contact" className="text-gray-700 hover:text-orange-500">Contacto</Link>
             </div>
-            
+
             <div className="flex items-center space-x-4">
+              {/* New login and register links, hidden on mobile */}
+              <div className="hidden md:flex space-x-4">
+                <Link href="/auth/login" className="text-gray-700 hover:text-orange-500">
+                  Iniciar sesión
+                </Link>
+                <Link href="auth/register" className="text-gray-700 hover:text-orange-500">
+                  Registrarse
+                </Link>
+              </div>
+              {/* End of new links */}
+
               <Link href="/cart">
                 <Button variant="ghost" size="icon">
                   <ShoppingCart className="h-6 w-6" />
@@ -79,7 +91,7 @@ async function HomePage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Productos Destacados</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.slice(0, 8).map((product) => (
+            {products.slice(0, 8).map((product: any) => (
               <ProductCard product={product} key={product.id} />
             ))}
           </div>
