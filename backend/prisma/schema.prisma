@@ -13,7 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enumeraciones
 enum EstadoPedido {
   PENDIENTE
   EN_PROCESO
@@ -29,30 +28,43 @@ enum MetodoPago {
   EFECTIVO
 }
 
+enum RolUsuario {
+  CLIENTE
+  ADMIN
+}
+
 model Producto {
-  id          Int              @id @default(autoincrement())
-  nombre      String           @unique
-  descripcion String
-  precio      Float
-  categoria   String
-  stock       Int
-  imagenUrl   String
-  detalles    DetallesPedido[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id               Int               @id @default(autoincrement())
+  nombre           String            @unique
+  descripcion      String
+  precio           Float
+  categoria        String
+  stock            Int
+  imagenUrl        String
+  detalles         DetallesPedido[]
+  carritoProductos CarritoProducto[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([categoria])
 }
 
 model Cliente {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  correo    String   @unique
-  telefono  String
-  direccion String
-  pedidos   Pedido[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int        @id @default(autoincrement())
+  nombre            String
+  correo            String     @unique
+  telefono          String
+  direccion         String
+  password          String
+  rol               RolUsuario @default(CLIENTE)
+  estado            Boolean    @default(true) // Si el cliente está activo o deshabilitado
+  carrito           Carrito?
+  pedidos           Pedido[]
+  sesiones          Sesion[]
+  emailVerified     Boolean    @default(false)
+  tokenVerificacion String?    @unique
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   @@index([correo])
 }
@@ -100,4 +112,39 @@ model Pago {
   updatedAt  DateTime   @updatedAt
 
   @@index([pedidoId])
+}
+
+// Modelo para manejar el carrito de compras
+model Carrito {
+  id        Int               @id @default(autoincrement())
+  clienteId Int               @unique
+  cliente   Cliente           @relation(fields: [clienteId], references: [id])
+  productos CarritoProducto[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model CarritoProducto {
+  id         Int      @id @default(autoincrement())
+  carritoId  Int
+  carrito    Carrito  @relation(fields: [carritoId], references: [id])
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+  cantidad   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([carritoId])
+  @@index([productoId])
+}
+
+// Modelo para manejar las sesiones de autenticación
+model Sesion {
+  id        Int      @id @default(autoincrement())
+  clienteId Int
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  token     String   @unique
+  ip        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

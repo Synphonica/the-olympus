@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ProductsService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ConflictException(
-            `Product with name ${createProductDto.nombre} already exists`,
+            `Producto con el nombre ${createProductDto.nombre} ya existe`,
           );
         }
       }
@@ -38,12 +38,12 @@ export class ProductsService {
   async findOne(id: number) {
     const productFound = await this.prismaService.producto.findUnique({
       where: {
-        id,
+        id: id,
       },
     });
 
     if (!productFound) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new NotFoundException(`Producto con id ${id} no encontrado`);
     }
 
     return productFound;
@@ -58,7 +58,7 @@ export class ProductsService {
     });
 
     if (!productFound) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new NotFoundException(`Producto con id ${id} no encontrado`);
     }
 
     return productFound;
@@ -72,7 +72,7 @@ export class ProductsService {
     });
 
     if (!deletedProduct) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new NotFoundException(`Producto con id ${id} no encontrado`);
     }
 
     return deletedProduct;
