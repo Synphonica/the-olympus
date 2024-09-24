@@ -17,7 +17,7 @@ const LoginPage = () => {
       const data = await login({ correo, password });
       if (data.access_token) {
         setAuthToken(data.access_token);
-        router.push('/dashboard'); // Redirige al dashboard o página principal
+        router.push('/'); // Redirige al dashboard o página principal
       } else {
         setError('Login failed. Please check your credentials.');
       }

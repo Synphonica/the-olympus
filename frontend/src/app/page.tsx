@@ -3,19 +3,43 @@ import { buttonVariants } from "@/components/ui/button"
 import { getProducts } from "./products/products.api"
 import Link from "next/link"
 import { ProductCard } from "@/components/product-card"
-import { Utensils, ShoppingBag, Clock, ShoppingCart, Menu } from "lucide-react"
+import { Utensils, ShoppingBag, Clock, ShoppingCart, Coffee, Pizza, Sandwich, Fish, Beef, Salad, Drumstick } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+
+const foodCategories = [
+  { name: "All", icon: Utensils },
+  { name: "Burger", icon: Coffee },
+  { name: "Mexican", icon: Utensils },
+  { name: "Indian Food", icon: Utensils },
+  { name: "Salad", icon: Salad },
+  { name: "Pizza", icon: Pizza },
+  { name: "BBQ", icon: Beef },
+  { name: "Sandwich", icon: Sandwich },
+  { name: "Meat", icon: Drumstick },
+  { name: "Noodles", icon: Utensils },
+  { name: "Sea Food", icon: Fish },
+  { name: "Sushi", icon: Fish },
+]
 
 async function HomePage() {
   const products = await getProducts()
 
   return (
-    <div className="min-h-screen bg-orange-50">
+    <div className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className="bg-white shadow-md">
+      <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
-            <Link href="/" className="text-2xl font-bold text-orange-500">El Olimpo</Link>
+            <div className="flex items-center">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzsCIL3B3uYsMjkTIf8azbAc7nNkxu9jueGTkpyEkSeh5CFkJjR8EkITSD8hWr3MjBaDY&usqp=CAU"
+                alt="El Olimpo Logo"
+                className="mr-2 h-8 w-8 object-contain"
+              />
+              <Link href="/" className="text-2xl font-bold text-orange-500">El Olimpo</Link>
+            </div>
 
             <div className="hidden md:flex space-x-4">
               <Link href="/" className="text-gray-700 hover:text-orange-500">Inicio</Link>
@@ -25,27 +49,20 @@ async function HomePage() {
             </div>
 
             <div className="flex items-center space-x-4">
-              {/* New login and register links, hidden on mobile */}
-              <div className="hidden md:flex space-x-4">
-                <Link href="/auth/login" className="text-gray-700 hover:text-orange-500">
-                  Iniciar sesión
-                </Link>
-                <Link href="auth/register" className="text-gray-700 hover:text-orange-500">
-                  Registrarse
-                </Link>
-              </div>
-              {/* End of new links */}
-
+              <Input className="w-40" placeholder="Buscar" />
+              <Link href="/auth/login" className="text-gray-700 hover:text-orange-500">
+                Iniciar sesión
+              </Link>
+              <Link href="/auth/register" className="text-gray-700 hover:text-orange-500">
+                Registrarse
+              </Link>
               <Link href="/cart">
                 <Button variant="ghost" size="icon">
                   <ShoppingCart className="h-6 w-6" />
                 </Button>
               </Link>
-              <Button variant="outline" className="hidden md:inline-flex">
+              <Button variant="outline">
                 Ordenar Ahora
-              </Button>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
               </Button>
             </div>
           </div>
@@ -55,16 +72,36 @@ async function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-20">
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4">El Olimpo</h1>
-          <p className="text-xl md:text-2xl mb-8">Sabores divinos, entrega olímpica</p>
-          <Link href="/menu" className={buttonVariants({ size: "lg" })}>
+          <h1 className="text-6xl font-extrabold mb-4">El Olimpo</h1>
+          <p className="text-2xl mb-8">Sabores divinos, entrega olímpica</p>
+          <Link href="/menu" className={buttonVariants({ size: "lg", variant: "secondary" })}>
             Ver Menú
           </Link>
         </div>
       </section>
 
+      {/* Food Categories */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-semibold mb-8 text-center">Explora Nuestras Categorías</h2>
+          <ScrollArea className="w-full">
+            <div className="flex space-x-8 pb-4">
+              {foodCategories.map((category) => (
+                <div key={category.name} className="flex flex-col items-center space-y-2 w-24">
+                  <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
+                    <category.icon className="w-8 h-8 text-orange-500" />
+                  </div>
+                  <span className="text-sm font-medium text-center">{category.name}</span>
+                </div>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-orange-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center text-center">
@@ -86,8 +123,16 @@ async function HomePage() {
         </div>
       </section>
 
+      {/* Popular Restaurants Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-semibold mb-8">Restaurantes Populares</h2>
+          {/* Add restaurant cards here */}
+        </div>
+      </section>
+
       {/* Featured Products Section */}
-      <section className="py-16">
+      <section className="py-16 bg-orange-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center">Productos Destacados</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

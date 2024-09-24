@@ -18,7 +18,7 @@ const RegisterPage = () => {
     setError('');
     try {
       await register({ nombre, correo, telefono, direccion, password });
-      router.push('/login'); // Redirige a la página de login después del registro exitoso
+      router.push('/auth/login'); // Redirige a la página de login después del registro exitoso
     } catch (err) {
       setError('Registration failed. Please try again.');
       console.error(err);
