@@ -1,12 +1,12 @@
-import React from 'react';
+import { ProtectedRoute } from '../../components/ProtectedRoute';
 
-function AdminDashboard() {
+const AdminDashboard = () => {
   return (
-    <div>
-      <h1>Panel de Administrador</h1>
-      {/* Aquí puedes agregar las funcionalidades de gestión de productos, usuarios, etc. */}
-    </div>
+    <ProtectedRoute roleRequired="admin">
+      <h1>Panel de Administración</h1>
+      {/* Contenido del panel */}
+    </ProtectedRoute>
   );
-}
+};
 
 export default AdminDashboard;

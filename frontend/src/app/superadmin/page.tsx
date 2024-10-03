@@ -1,12 +1,13 @@
-import React from 'react';
+import { ProtectedRoute } from '../../components/ProtectedRoute';
 
-function SuperAdminDashboard() {
+const AdminPanel = () => {
   return (
-    <div>
-      <h1>Panel de Superadministrador</h1>
-      {/* Funcionalidades completas de gestión */}
-    </div>
+    <ProtectedRoute roleRequired="superadmin">
+      <h1>Bienvenido al Panel de SuperAdmin</h1>
+      <p>Aquí podrás gestionar todas las configuraciones de la aplicación.</p>
+      {/* Aquí puedes agregar el contenido específico del panel */}
+    </ProtectedRoute>
   );
-}
+};
 
-export default SuperAdminDashboard;
+export default AdminPanel;

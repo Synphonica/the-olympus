@@ -1,12 +1,27 @@
+'use client'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { buttonVariants } from "@/components/ui/button"
-import { getProducts } from "./products/products.api"
-import Link from "next/link"
-import { ProductCard } from "@/components/product-card"
-import { Utensils, ShoppingBag, Clock, ShoppingCart, Coffee, Pizza, Sandwich, Fish, Beef, Salad, Drumstick } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { useEffect, useState } from "react";
+import { buttonVariants } from "@/components/ui/button";
+import { getProducts } from "./products/products.api";
+import Link from "next/link";
+import { ProductCard } from "@/components/product-card";
+import {
+  Utensils,
+  ShoppingBag,
+  Clock,
+  ShoppingCart,
+  Coffee,
+  Pizza,
+  Sandwich,
+  Fish,
+  Beef,
+  Salad,
+  Drumstick,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const foodCategories = [
   { name: "All", icon: Utensils },
@@ -21,10 +36,19 @@ const foodCategories = [
   { name: "Noodles", icon: Utensils },
   { name: "Sea Food", icon: Fish },
   { name: "Sushi", icon: Fish },
-]
+];
 
-async function HomePage() {
-  const products = await getProducts()
+const HomePage = () => {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const result = await getProducts();
+      setProducts(Array.isArray(result) ? result : []);
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,22 +62,47 @@ async function HomePage() {
                 alt="El Olimpo Logo"
                 className="mr-2 h-8 w-8 object-contain"
               />
-              <Link href="/" className="text-2xl font-bold text-orange-500">El Olimpo</Link>
+              <Link href="/" className="text-2xl font-bold text-orange-500">
+                El Olimpo
+              </Link>
             </div>
 
             <div className="hidden md:flex space-x-4">
-              <Link href="/" className="text-gray-700 hover:text-orange-500">Inicio</Link>
-              <Link href="/menu" className="text-gray-700 hover:text-orange-500">Menú</Link>
-              <Link href="/about" className="text-gray-700 hover:text-orange-500">Nosotros</Link>
-              <Link href="/contact" className="text-gray-700 hover:text-orange-500">Contacto</Link>
+              <Link href="/" className="text-gray-700 hover:text-orange-500">
+                Inicio
+              </Link>
+              <Link
+                href="/menu"
+                className="text-gray-700 hover:text-orange-500"
+              >
+                Menú
+              </Link>
+              <Link
+                href="/about"
+                className="text-gray-700 hover:text-orange-500"
+              >
+                Nosotros
+              </Link>
+              <Link
+                href="/contact"
+                className="text-gray-700 hover:text-orange-500"
+              >
+                Contacto
+              </Link>
             </div>
 
             <div className="flex items-center space-x-4">
               <Input className="w-40" placeholder="Buscar" />
-              <Link href="/auth/login" className="text-gray-700 hover:text-orange-500">
+              <Link
+                href="/auth/login"
+                className="text-gray-700 hover:text-orange-500"
+              >
                 Iniciar sesión
               </Link>
-              <Link href="/auth/register" className="text-gray-700 hover:text-orange-500">
+              <Link
+                href="/auth/register"
+                className="text-gray-700 hover:text-orange-500"
+              >
                 Registrarse
               </Link>
               <Link href="/cart">
@@ -61,9 +110,7 @@ async function HomePage() {
                   <ShoppingCart className="h-6 w-6" />
                 </Button>
               </Link>
-              <Button variant="outline">
-                Ordenar Ahora
-              </Button>
+              <Button variant="outline">Ordenar Ahora</Button>
             </div>
           </div>
         </div>
@@ -74,7 +121,10 @@ async function HomePage() {
         <div className="container mx-auto px-4">
           <h1 className="text-6xl font-extrabold mb-4">El Olimpo</h1>
           <p className="text-2xl mb-8">Sabores divinos, entrega olímpica</p>
-          <Link href="/menu" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+          <Link
+            href="/menu"
+            className={buttonVariants({ size: "lg", variant: "secondary" })}
+          >
             Ver Menú
           </Link>
         </div>
@@ -83,15 +133,22 @@ async function HomePage() {
       {/* Food Categories */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold mb-8 text-center">Explora Nuestras Categorías</h2>
+          <h2 className="text-3xl font-semibold mb-8 text-center">
+            Explora Nuestras Categorías
+          </h2>
           <ScrollArea className="w-full">
             <div className="flex space-x-8 pb-4">
               {foodCategories.map((category) => (
-                <div key={category.name} className="flex flex-col items-center space-y-2 w-24">
+                <div
+                  key={category.name}
+                  className="flex flex-col items-center space-y-2 w-24"
+                >
                   <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
                     <category.icon className="w-8 h-8 text-orange-500" />
                   </div>
-                  <span className="text-sm font-medium text-center">{category.name}</span>
+                  <span className="text-sm font-medium text-center">
+                    {category.name}
+                  </span>
                 </div>
               ))}
             </div>
@@ -126,7 +183,9 @@ async function HomePage() {
       {/* Popular Restaurants Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-semibold mb-8">Restaurantes Populares</h2>
+          <h2 className="text-3xl font-semibold mb-8">
+            Restaurantes Populares
+          </h2>
           {/* Add restaurant cards here */}
         </div>
       </section>
@@ -134,14 +193,19 @@ async function HomePage() {
       {/* Featured Products Section */}
       <section className="py-16 bg-orange-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Productos Destacados</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center">
+            Productos Destacados
+          </h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.slice(0, 8).map((product: any) => (
               <ProductCard product={product} key={product.id} />
             ))}
           </div>
           <div className="text-center mt-12">
-            <Link href="/products" className={buttonVariants({ variant: "outline", size: "lg" })}>
+            <Link
+              href="/products"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
               Ver Todos los Productos
             </Link>
           </div>
@@ -151,9 +215,16 @@ async function HomePage() {
       {/* Call to Action Section */}
       <section className="bg-orange-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">¿Listo para ordenar?</h2>
-          <p className="text-xl mb-8">Haz tu pedido ahora y disfruta de la mejor comida rápida</p>
-          <Link href="/order" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            ¿Listo para ordenar?
+          </h2>
+          <p className="text-xl mb-8">
+            Haz tu pedido ahora y disfruta de la mejor comida rápida
+          </p>
+          <Link
+            href="/order"
+            className={buttonVariants({ size: "lg", variant: "secondary" })}
+          >
             Ordenar Ahora
           </Link>
         </div>
@@ -171,7 +242,7 @@ async function HomePage() {
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

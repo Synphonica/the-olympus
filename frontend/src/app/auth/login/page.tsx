@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LoginForm } from "./loginForm";
+import { LoginForm } from "@/app/auth/login/loginForm";
 import { login } from "../auth.api";
 
 const LoginPage = () => {
@@ -9,25 +9,35 @@ const LoginPage = () => {
 
   const handleLogin = async (data: { correo: string; password: string }) => {
     try {
-      const response = await login(data);
-      
-      // Redirige según el rol del usuario
-      if (response.role === "admin") {
-        router.push("/admin");
-      } else if (response.role === "superadmin") {
-        router.push("/superadmin");
+      const response = await login(data); // Llama a la API del backend
+      if (response.access_token) {
+        localStorage.setItem("token", response.access_token);
+
+        // Verifica el rol del usuario y redirige
+        if (response.role === "superadmin") {
+          router.push("/admin/panel"); // Redirigir al panel de superadmin
+        } else if (response.role === "admin") {
+          router.push("/admin/dashboard"); // Redirigir al dashboard de admin
+        } else {
+          router.push("/"); // Redirigir a la página principal para clientes
+        }
       } else {
-        router.push("/products");
+        alert("Error: Credenciales inválidas");
       }
     } catch (error) {
-      alert("Credenciales incorrectas. Inténtalo nuevamente.");
+      console.error("Error al iniciar sesión:", error);
+      alert("Ocurrió un error al iniciar sesión. Intenta nuevamente.");
     }
   };
 
   return (
-    <div>
-      <h1>Iniciar Sesión</h1>
-      <LoginForm onSubmit={handleLogin} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Iniciar sesión
+        </h2>
+        <LoginForm onSubmit={handleLogin} />
+      </div>
     </div>
   );
 };

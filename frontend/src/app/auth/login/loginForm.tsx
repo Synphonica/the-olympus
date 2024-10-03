@@ -1,33 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-interface LoginFormProps {
-  onSubmit: (data: { correo: string; password: string }) => void;
-}
+// Esquema de validación para el formulario de login
+const formSchema = z.object({
+  correo: z.string().email({
+    message: "Por favor, ingresa un correo electrónico válido.",
+  }),
+  password: z.string().min(6, {
+    message: "La contraseña debe tener al menos 6 caracteres.",
+  }),
+});
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    correo: '',
-    password: '',
+export function LoginForm({ onSubmit }: { onSubmit: (data: any) => void }) {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      correo: "",
+      password: "",
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="correo" placeholder="Correo" type="email" value={formData.correo} onChange={handleChange} required />
-      <input name="password" placeholder="Contraseña" type="password" value={formData.password} onChange={handleChange} required />
-      <button type="submit">Iniciar Sesión</button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="correo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Correo electrónico</FormLabel>
+              <FormControl>
+                <Input placeholder="tu@ejemplo.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contraseña</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="******" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full">Iniciar sesión</Button>
+      </form>
+    </Form>
   );
-};
+}
