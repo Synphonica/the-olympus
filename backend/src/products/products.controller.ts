@@ -16,22 +16,26 @@ export class ProductsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Obtener todos los productos' })
   @ApiResponse({ status: 200, description: 'Retornar todos los productos' })
   findAll() {
     return this.productsService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Obtener un producto' })
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Actualizar un producto' })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar un producto' })
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }

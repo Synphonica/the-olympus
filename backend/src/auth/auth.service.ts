@@ -1,103 +1,68 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/create-auth.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
+    private userService: UserService,
+    private jwtService: JwtService,
   ) {}
 
-  // Validación de usuario según su rol
-  async validateUser(
-    correo: string,
-    password: string,
-    userType: 'cliente' | 'admin' | 'superadmin',
-  ) {
-    let user;
-    if (userType === 'cliente') {
-      user = await this.prisma.cliente.findUnique({ where: { correo } });
-    } else if (userType === 'admin') {
-      user = await this.prisma.admin.findUnique({ where: { correo } });
-    } else if (userType === 'superadmin') {
-      user = await this.prisma.superAdmin.findUnique({ where: { correo } });
-    }
+  async login(dto: LoginDto, res: Response) {
+    const user = await this.validateUser(dto);
+    const payload = { cliente: user.correo, sub: { nombre: user.nombre } };
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    } else {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-  }
-
-  // Registro de usuario
-  async register(data: {
-    nombre: string;
-    correo: string;
-    password: string;
-    rol: 'CLIENTE' | 'ADMIN' | 'SUPERADMIN';
-  }) {
-    let user;
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
-    if (data.rol === 'CLIENTE') {
-      user = await this.prisma.cliente.create({
-        data: {
-          nombre: data.nombre,
-          correo: data.correo,
-          password: hashedPassword,
-          rol: data.rol,
-          telefono: 'defaultTelefono',
-          direccion: 'defaultDireccion',
-        },
-      });
-    } else if (data.rol === 'ADMIN') {
-      user = await this.prisma.admin.create({
-        data: {
-          nombre: data.nombre,
-          correo: data.correo,
-          password: hashedPassword,
-          rol: data.rol,
-        },
-      });
-    } else if (data.rol === 'SUPERADMIN') {
-      user = await this.prisma.superAdmin.create({
-        data: {
-          nombre: data.nombre,
-          correo: data.correo,
-          password: hashedPassword,
-          rol: data.rol,
-        },
-      });
-    } else {
-      throw new BadRequestException('Rol inválido');
-    }
-
-    return { message: `${data.rol} registrado correctamente`, user };
-  }
-
-  // Método de login
-  async login(user: any) {
-    const payload = { correo: user.correo, sub: user.id, role: user.rol };
-    return {
-      access_token: this.jwtService.sign(payload),
-      role: user.rol,
-    };
-  }
-
-  async logActivity(userId: number, action: string) {
-    await this.prisma.registroActividad.create({
-      data: {
-        usuarioId: userId,
-        accion: action,
-        detalles: `Acción realizada por el usuario con ID: ${userId}`,
-      },
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+      secret: process.env.JWT_SECRET,
     });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '7d',
+      secret: process.env.JWT_REFRESH_SECRET,
+    });
+
+    // Aquí se configura la cookie HTTP-only
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // solo en HTTPS en producción
+      maxAge: 15 * 60 * 1000, // 15 minutos
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+    });
+
+    return { message: 'Login exitoso' };
+  }
+
+  async validateUser(dto: LoginDto) {
+    const user = await this.userService.findByEmail(dto.correo);
+    if (user && (await compare(dto.password, user.password))) {
+      const { password, ...result } = user;
+      return result;
+    }
+    throw new UnauthorizedException('Credenciales incorrectas');
+  }
+
+  async refreshToken(user: any) {
+    const payload = { cliente: user.cliente, sub: user.sub };
+
+    return {
+      accessToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '15m',
+        secret: process.env.JWT_SECRET,
+      }),
+      refreshToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_SECRET,
+      }),
+    };
   }
 }

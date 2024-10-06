@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -45,22 +51,18 @@ model Producto {
 }
 
 model Cliente {
-  id                 Int                 @id @default(autoincrement())
-  nombre             String
-  correo             String              @unique
-  telefono           String
-  direccion          String
-  password           String
-  rol                RolUsuario          @default(CLIENTE)
-  estado             Boolean             @default(true) // Si el cliente está activo o deshabilitado
-  carrito            Carrito?
-  pedidos            Pedido[]
-  sesiones           Sesion[]
-  refreshTokens      RefreshToken[]
-  tokenVerificacion  String?             @unique
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  registrosActividad RegistroActividad[] @relation(name: "ClienteToRegistroActividad")
+  id                Int        @id @default(autoincrement())
+  nombre            String
+  correo            String     @unique
+  telefono          String
+  direccion         String
+  password          String
+  rol               RolUsuario @default(CLIENTE)
+  estado            Boolean    @default(true) // Si el cliente está activo o deshabilitado
+  carrito           Carrito?
+  pedidos           Pedido[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   @@index([correo])
 }
@@ -132,69 +134,4 @@ model CarritoProducto {
 
   @@index([carritoId])
   @@index([productoId])
-}
-
-// Modelo para manejar las sesiones de autenticación
-model Sesion {
-  id        Int      @id @default(autoincrement())
-  clienteId Int
-  cliente   Cliente  @relation(fields: [clienteId], references: [id])
-  token     String   @unique
-  ip        String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  clienteId Int
-  cliente   Cliente  @relation(fields: [clienteId], references: [id])
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([clienteId])
-}
-
-model RegistroActividad {
-  id         Int         @id @default(autoincrement())
-  accion     String
-  usuarioId  Int
-  usuario    Cliente?    @relation(fields: [usuarioId], references: [id], name: "ClienteToRegistroActividad", map: "RegistroActividad_Cliente_fkey")
-  superAdmin SuperAdmin? @relation(fields: [usuarioId], references: [id], name: "SuperAdminToRegistroActividad", map: "RegistroActividad_SuperAdmin_fkey")
-  admin      Admin?      @relation(fields: [usuarioId], references: [id], name: "AdminToRegistroActividad", map: "RegistroActividad_Admin_fkey")
-  createdAt  DateTime    @default(now())
-  detalles   String
-}
-
-model Admin {
-  id                 Int                 @id @default(autoincrement())
-  nombre             String
-  correo             String              @unique
-  password           String
-  rol                RolUsuario          @default(ADMIN) // Definimos el rol de admin aquí
-  estado             Boolean             @default(true) // Si el admin está activo o deshabilitado
-  otpSecret          String? // Secret para el código OTP
-  tokenVerificacion  String?             @unique
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  registrosActividad RegistroActividad[] @relation(name: "AdminToRegistroActividad")
-
-  @@index([correo])
-}
-
-model SuperAdmin {
-  id                 Int                 @id @default(autoincrement())
-  nombre             String
-  correo             String              @unique
-  password           String
-  rol                RolUsuario          @default(SUPERADMIN) // Definimos el rol de superadmin aquí
-  otpSecret          String? // Secret para el código OTP
-  tokenVerificacion  String?             @unique
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  registrosActividad RegistroActividad[] @relation(name: "SuperAdminToRegistroActividad")
-
-  @@index([correo])
 }
