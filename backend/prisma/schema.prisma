@@ -51,18 +51,18 @@ model Producto {
 }
 
 model Cliente {
-  id                Int        @id @default(autoincrement())
-  nombre            String
-  correo            String     @unique
-  telefono          String
-  direccion         String
-  password          String
-  rol               RolUsuario @default(CLIENTE)
-  estado            Boolean    @default(true) // Si el cliente está activo o deshabilitado
-  carrito           Carrito?
-  pedidos           Pedido[]
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  correo    String     @unique
+  telefono  String
+  direccion String
+  password  String
+  rol       RolUsuario @default(CLIENTE)
+  estado    Boolean    @default(true) // Si el cliente está activo o deshabilitado
+  carrito   Carrito?
+  pedidos   Pedido[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@index([correo])
 }
@@ -134,4 +134,15 @@ model CarritoProducto {
 
   @@index([carritoId])
   @@index([productoId])
+}
+
+// Modelo para restaurantes
+model Restaurante {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique
+  imagen      String
+  descripcion String
+  menuUrl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

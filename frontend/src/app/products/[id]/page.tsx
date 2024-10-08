@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Image from "next/image"
 import { getProduct } from "../products.api"
 import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
@@ -22,8 +23,7 @@ async function ProductDetailPage({params} : Props) {
         </CardHeader>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <img src={product.imagenUrl} alt={product.nombre} className="w-full h-64 object-cover rounded-lg shadow-md mb-4" />
+              <Image src={product.imagenUrl} alt={product.nombre} width={500} height={256} className="w-full h-64 object-cover rounded-lg shadow-md mb-4" />
               <p className="text-3xl font-bold text-orange-600">${product.precio.toFixed(2)}</p>
             </div>
             <div className="space-y-4">
@@ -37,9 +37,8 @@ async function ProductDetailPage({params} : Props) {
                 </span>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+          </Card>
     </div>
   )
 }

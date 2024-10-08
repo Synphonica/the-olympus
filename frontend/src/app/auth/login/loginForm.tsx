@@ -28,9 +28,10 @@ const LoginForm = () => {
     try {
       const userData = await loginUser(formData);
       console.log("Login exitoso:", userData);
-      router.push("/"); // Redirige a la página principal
+      console.log("Redirigiendo a la página principal..."); // Comprobar si llega aquí
+      router.push("/"); // Redirige a la página principal solo cuando es exitoso
     } catch (error: any) {
-      console.error(error.message);
+      console.error("Error al iniciar sesión:", error.message);
     }
   };
 
@@ -96,7 +97,10 @@ const LoginForm = () => {
             </Button>
           </form>
           <div className="text-center mt-6">
-            <Link href="/auth/register" className="text-orange-600 hover:underline">
+            <Link
+              href="/auth/register"
+              className="text-orange-600 hover:underline"
+            >
               ¿No tienes cuenta? Regístrate aquí
             </Link>
           </div>

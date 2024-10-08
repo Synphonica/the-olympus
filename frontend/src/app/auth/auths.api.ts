@@ -21,51 +21,29 @@ export const registerUser = async (userData: {
   }
 };
 
-// Función para hacer login
+// Función para hacer login sin manejar tokens manualmente
 export const loginUser = async (loginData: {
   correo: string;
   password: string;
 }) => {
   try {
+    console.log("Datos de inicio de sesión enviados:", loginData);
+
+    // Realizamos la solicitud al backend
     const response = await axiosInstance.post("/api/auth/login", loginData);
-    const { accessToken, refreshToken } = response.data.backendTokens;
 
-    // Guardamos los tokens en el localStorage
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    // El backend debería estar manejando las cookies, solo verificamos si la respuesta fue exitosa
+    console.log("Respuesta del backend:", response); // Solo para verificar
 
-    return response.data;
-  } catch (error) {
-    const err = error as any;
+    return response.data; // Devolver el resultado de la respuesta si es necesario
+  } catch (error: any) {
+    console.error("Error en loginUser:", error.response?.data || error.message);
     throw new Error(
-      `Error al iniciar sesión: ${err.response?.data?.message || err.message}`
-    );
-  }
-};
-
-// Función para refrescar el token de acceso usando el refreshToken
-export const refreshAccessToken = async () => {
-  try {
-    const response = await axiosInstance.post("/api/auth/refresh");
-    const { accessToken, refreshToken } = response.data;
-
-    // Actualizamos los tokens en el localStorage
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-
-    return accessToken;
-  } catch (error) {
-    const err = error as any;
-    throw new Error(
-      `Error al refrescar el token: ${
-        err.response?.data?.message || err.message
+      `Error al iniciar sesión: ${
+        error.response?.data?.message || error.message
       }`
     );
   }
 };
 
-// Función para hacer logout
-export const logoutUser = () => {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-};
+// No es necesario refrescar el token manualmente, ya que la cookie lo hace por ti

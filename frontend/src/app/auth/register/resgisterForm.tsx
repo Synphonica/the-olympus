@@ -5,6 +5,7 @@ import { registerUser } from "../auths.api"; // Importa la función desde auths.
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const RegisterForm = () => {
     direccion: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -27,6 +30,8 @@ const RegisterForm = () => {
     try {
       const responseData = await registerUser(formData);
       console.log("Registro exitoso:", responseData);
+      console.log("Redirigiendo a la página principal..."); // Comprobar si llega aquí
+      router.push("/auth/login"); // Redirige a la página principal solo cuando es exitoso
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -149,7 +154,10 @@ const RegisterForm = () => {
             </Button>
           </form>
           <div className="text-center mt-6">
-            <Link href="/auth/login" className="text-orange-600 hover:underline">
+            <Link
+              href="/auth/login"
+              className="text-orange-600 hover:underline"
+            >
               ¿Ya tienes una cuenta? Inicia sesión aquí
             </Link>
           </div>

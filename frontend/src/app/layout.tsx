@@ -19,22 +19,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link
-          rel="icon"
-          href="/img/logo-hd.png"
-          type="image/png"
-        />
-      </head>
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        <main className="container mx-auto pt-5">{children}</main>
-      </body>
-    </html>
+      <html lang="en">
+        <head>
+          <link rel="icon" href="/img/logo-hd.png" type="image/png" />
+        </head>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
+          <main className="container mx-auto pt-5">{children}</main>
+        </body>
+      </html>
   );
 }

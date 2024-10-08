@@ -1,9 +1,10 @@
+// src/auth/auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Response } from 'express';
+import { LoginDto } from './dto/create-auth.dto';
 import { UserService } from '../user/user.service';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from './dto/create-auth.dto';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,10 @@ export class AuthService {
 
   async login(dto: LoginDto, res: Response) {
     const user = await this.validateUser(dto);
-    const payload = { cliente: user.correo, sub: { nombre: user.nombre } };
+    const payload = {
+      cliente: user.correo,
+      sub: { nombre: user.nombre },
+    };
 
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',
@@ -26,29 +30,36 @@ export class AuthService {
       secret: process.env.JWT_REFRESH_SECRET,
     });
 
-    // Aquí se configura la cookie HTTP-only
+    // Enviar cookies HTTP-only
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // solo en HTTPS en producción
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 minutos
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
     });
 
-    return { message: 'Login exitoso' };
+    // Devolver los tokens también en el cuerpo de la respuesta
+    return res.json({
+      message: 'Login exitoso',
+      backendTokens: { accessToken, refreshToken },
+    });
   }
 
+  // Valida al usuario por correo y contraseña
   async validateUser(dto: LoginDto) {
     const user = await this.userService.findByEmail(dto.correo);
     if (user && (await compare(dto.password, user.password))) {
       const { password, ...result } = user;
       return result;
     }
-    throw new UnauthorizedException('Credenciales incorrectas');
+    throw new UnauthorizedException();
   }
 
   async refreshToken(user: any) {
