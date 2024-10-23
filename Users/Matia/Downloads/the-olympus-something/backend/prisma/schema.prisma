@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EstadoPedido {
+  PENDIENTE
+  EN_PROCESO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+}
+
+enum MetodoPago {
+  TARJETA
+  PAYPAL
+  TRANSFERENCIA
+  EFECTIVO
+}
+
+enum RolUsuario {
+  CLIENTE
+  ADMIN
+  SUPERADMIN
+}
+
+model Producto {
+  id               Int               @id @default(autoincrement())
+  nombre           String            @unique
+  descripcion      String
+  precio           Float
+  categoria        String
+  stock            Int
+  imagenUrl        String
+  detalles         DetallesPedido[]
+  carritoProductos CarritoProducto[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([categoria])
+}
+
+model Cliente {
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  correo    String     @unique
+  telefono  String
+  direccion String
+  password  String
+  rol       RolUsuario @default(CLIENTE)
+  estado    Boolean    @default(true) // Si el cliente está activo o deshabilitado
+  carrito   Carrito?
+  pedidos   Pedido[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([correo])
+}
+
+model Pedido {
+  id          Int              @id @default(autoincrement())
+  fechaPedido DateTime         @default(now())
+  estado      EstadoPedido     @default(PENDIENTE)
+  total       Float
+  metodoPago  MetodoPago
+  clienteId   Int
+  cliente     Cliente          @relation(fields: [clienteId], references: [id])
+  detalles    DetallesPedido[]
+  pago        Pago?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([clienteId])
+  @@index([estado])
+}
+
+model DetallesPedido {
+  id             Int      @id @default(autoincrement())
+  pedidoId       Int
+  pedido         Pedido   @relation(fields: [pedidoId], references: [id])
+  productoId     Int
+  producto       Producto @relation(fields: [productoId], references: [id])
+  cantidad       Int
+  precioUnitario Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([pedidoId])
+  @@index([productoId])
+}
+
+model Pago {
+  id         Int        @id @default(autoincrement())
+  monto      Float
+  fechaPago  DateTime   @default(now())
+  metodoPago MetodoPago
+  pedidoId   Int        @unique
+  pedido     Pedido     @relation(fields: [pedidoId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([pedidoId])
+}
+
+// Modelo para manejar el carrito de compras
+model Carrito {
+  id        Int               @id @default(autoincrement())
+  clienteId Int               @unique
+  cliente   Cliente           @relation(fields: [clienteId], references: [id])
+  productos CarritoProducto[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model CarritoProducto {
+  id         Int      @id @default(autoincrement())
+  carritoId  Int
+  carrito    Carrito  @relation(fields: [carritoId], references: [id])
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+  cantidad   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([carritoId])
+  @@index([productoId])
+}
+
+// Modelo para restaurantes
+model Restaurante {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique
+  imagen      String
+  descripcion String
+  menuUrl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
